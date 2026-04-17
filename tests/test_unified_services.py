@@ -81,9 +81,7 @@ async def test_router_transfers_to_scheduling() -> None:
         AgentSession[UserData](llm=agent_llm, userdata=UserData()) as session,
     ):
         await session.start(RouterAgent())
-        result = await session.run(
-            user_input="I want to book a consultation meeting next week."
-        )
+        result = await session.run(user_input="I want to book a consultation meeting next week.")
         result.expect.next_event().is_function_call(name="transfer_to_scheduling")
 
 
@@ -121,22 +119,11 @@ async def test_real_estate_refuses_medical_advice() -> None:
     it should route away or gracefully redirect."""
     async with (
         _agent_llm() as agent_llm,
-        _judge_llm() as judge_llm,
         AgentSession[UserData](llm=agent_llm, userdata=UserData()) as session,
     ):
         await session.start(RealEstateAgent())
         result = await session.run(user_input="Actually I need to book a doctor.")
-        await (
-            result.expect.next_event()
-            .judge(
-                judge_llm,
-                intent=(
-                    "Either calls return_to_main_menu to hand the caller back, or "
-                    "politely explains this is real estate and offers to transfer. "
-                    "Does NOT attempt to book the doctor itself."
-                ),
-            )
-        )
+        result.expect.next_event().is_function_call(name="return_to_main_menu")
 
 
 # ---------------------------------------------------------------------------

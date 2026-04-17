@@ -28,13 +28,14 @@ class RouterAgent(Agent):
                 "for a voice call - no special characters, no bullet points, "
                 "keep replies short. "
                 "\n\n"
-                "Figure out what the caller needs and route them: "
-                "- Real estate (property viewings, listings, rentals): call transfer_to_real_estate. "
-                "- Healthcare (medical appointments, doctor visits): call transfer_to_healthcare. "
-                "- Orders (food, products, purchases): call transfer_to_orders. "
-                "- General appointments (consultations, meetings): call transfer_to_scheduling. "
+                "When the caller indicates what they need, route them immediately: "
+                "- Real estate (property viewings, listings, rentals, houses, apartments): call transfer_to_real_estate. "
+                "- Healthcare (medical appointments, doctor, health booking): call transfer_to_healthcare. "
+                "- Orders (food, products, purchases, ordering): call transfer_to_orders. "
+                "- General appointments (consultations, meetings, appointments): call transfer_to_scheduling. "
                 "\n\n"
-                "If the caller is unsure, ask a friendly clarifying question. "
+                "If the caller is vague or unsure, ask a friendly clarifying question. "
+                "But if their intent is clear, transfer immediately - do not ask additional questions. "
                 "Do NOT try to handle a specialized request yourself - always transfer. "
                 "If the caller has already used a service and comes back, greet them "
                 "by acknowledging the prior activity briefly."
@@ -57,9 +58,7 @@ class RouterAgent(Agent):
             )
 
     @function_tool
-    async def transfer_to_real_estate(
-        self, ctx: RunContext[UserData]
-    ) -> tuple[Agent, str]:
+    async def transfer_to_real_estate(self, ctx: RunContext[UserData]) -> tuple[Agent, str]:
         """Transfer the caller to the real estate specialist for property viewings,
         listings, buying, renting, or real estate questions."""
         from .real_estate import RealEstateAgent
@@ -68,9 +67,7 @@ class RouterAgent(Agent):
         return RealEstateAgent(), "Connecting you to our real estate specialist."
 
     @function_tool
-    async def transfer_to_healthcare(
-        self, ctx: RunContext[UserData]
-    ) -> tuple[Agent, str]:
+    async def transfer_to_healthcare(self, ctx: RunContext[UserData]) -> tuple[Agent, str]:
         """Transfer the caller to the healthcare booking specialist for medical
         appointments, doctor visits, or healthcare inquiries."""
         from .healthcare import HealthcareAgent
@@ -79,9 +76,7 @@ class RouterAgent(Agent):
         return HealthcareAgent(), "Connecting you to healthcare booking."
 
     @function_tool
-    async def transfer_to_orders(
-        self, ctx: RunContext[UserData]
-    ) -> tuple[Agent, str]:
+    async def transfer_to_orders(self, ctx: RunContext[UserData]) -> tuple[Agent, str]:
         """Transfer the caller to the order-taking specialist for placing
         food, product, or purchase orders."""
         from .orders import OrderAgent
@@ -90,9 +85,7 @@ class RouterAgent(Agent):
         return OrderAgent(), "Connecting you to place your order."
 
     @function_tool
-    async def transfer_to_scheduling(
-        self, ctx: RunContext[UserData]
-    ) -> tuple[Agent, str]:
+    async def transfer_to_scheduling(self, ctx: RunContext[UserData]) -> tuple[Agent, str]:
         """Transfer the caller to the general scheduling specialist for
         consultations, meetings, or service appointments that are not
         healthcare or real estate."""

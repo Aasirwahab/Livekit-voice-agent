@@ -54,9 +54,7 @@ class OrderAgent(Agent):
         )
 
     async def on_enter(self) -> None:
-        await self.session.say(
-            "Ready to take your order. What can I get started for you?"
-        )
+        await self.session.say("Ready to take your order. What can I get started for you?")
 
     @function_tool
     async def list_menu(
@@ -131,12 +129,9 @@ class OrderAgent(Agent):
         order = ctx.userdata.current_order
         if not order.items:
             return "The order is empty. What would you like?"
-        parts = [
-            f"{i['quantity']} {i['name']} at ${i['price']:.2f}" for i in order.items
-        ]
+        parts = [f"{i['quantity']} {i['name']} at ${i['price']:.2f}" for i in order.items]
         return (
-            f"Current order: {'; '.join(parts)}. "
-            f"Total is ${order.total:.2f}. Does that look right?"
+            f"Current order: {'; '.join(parts)}. Total is ${order.total:.2f}. Does that look right?"
         )
 
     @function_tool

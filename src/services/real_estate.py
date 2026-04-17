@@ -204,7 +204,9 @@ class RealEstateAgent(Agent):
 
         Ask naturally during the conversation - don't interrogate the caller.
         """
-        tier = "priority" if pre_approved and timeline in {"immediately", "1-3 months"} else "standard"
+        tier = (
+            "priority" if pre_approved and timeline in {"immediately", "1-3 months"} else "standard"
+        )
         logger.info(
             "lead qualified",
             extra={

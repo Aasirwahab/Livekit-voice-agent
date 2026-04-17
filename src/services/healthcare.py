@@ -58,10 +58,12 @@ class HealthcareAgent(Agent):
                 "serious symptoms, advise them to call 911 or their provider directly. "
                 "\n\n"
                 "Flow: "
-                "1. Ask what they need (new appointment, follow-up, reschedule). "
-                "2. Ask their insurance if booking new. "
-                "3. Use list_compatible_doctors to find matches. "
-                "4. Book with book_medical_appointment. "
+                "1. IMMEDIATELY when the caller mentions BOTH insurance AND a specialty (or 'general'), "
+                "call list_compatible_doctors with those details. Do NOT ask for the patient name first. "
+                "2. If they mention insurance but no specialty, ask what type of doctor they need, "
+                "then call list_compatible_doctors. "
+                "3. If they haven't mentioned insurance yet, ask for it first. "
+                "4. Once you show compatible doctors, the caller will pick one. Book with book_medical_appointment. "
                 "\n\n"
                 "If the caller wants a different service, use return_to_main_menu."
             ),
@@ -159,8 +161,7 @@ class HealthcareAgent(Agent):
 
         readable = when.strftime("%A %B %d at %I:%M %p").replace(" 0", " ")
         return (
-            f"Confirmed. {patient_name} is booked with {doctor_name} "
-            f"on {readable}. Anything else?"
+            f"Confirmed. {patient_name} is booked with {doctor_name} on {readable}. Anything else?"
         )
 
     @function_tool

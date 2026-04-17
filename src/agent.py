@@ -1,6 +1,7 @@
 import logging
 
 from dotenv import load_dotenv
+
 from livekit.agents import (
     Agent,
     AgentServer,
@@ -73,9 +74,7 @@ async def my_agent(ctx: JobContext):
         llm=inference.LLM(model=AGENT_MODEL),
         # Text-to-speech (TTS) is your agent's voice, turning the LLM's text into speech that the user can hear
         # See all available models as well as voice selections at https://docs.livekit.io/agents/models/tts/
-        tts=inference.TTS(
-            model="cartesia/sonic-3", voice="9626c31c-bec5-4cca-baa8-f8ba9e84c8bc"
-        ),
+        tts=inference.TTS(model="cartesia/sonic-3", voice="9626c31c-bec5-4cca-baa8-f8ba9e84c8bc"),
         # VAD is used to detect when the user is speaking
         vad=ctx.proc.userdata["vad"],
         # Turn handling configuration (replaces deprecated min_endpointing_delay, preemptive_generation, turn_detection)
@@ -122,7 +121,9 @@ async def my_agent(ctx: JobContext):
     await ctx.connect()
 
     # Greet the user when the agent starts
-    await session.say("Hello! I'm your voice assistant. How can I help you today?", allow_interruptions=True)
+    await session.say(
+        "Hello! I'm your voice assistant. How can I help you today?", allow_interruptions=True
+    )
 
 
 if __name__ == "__main__":

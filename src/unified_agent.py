@@ -53,9 +53,7 @@ async def unified_agent(ctx: JobContext):
         userdata=UserData(),
         stt=inference.STT(model="deepgram/nova-3", language="en"),
         llm=inference.LLM(model=AGENT_MODEL),
-        tts=inference.TTS(
-            model="cartesia/sonic-3", voice="9626c31c-bec5-4cca-baa8-f8ba9e84c8bc"
-        ),
+        tts=inference.TTS(model="cartesia/sonic-3", voice="9626c31c-bec5-4cca-baa8-f8ba9e84c8bc"),
         vad=ctx.proc.userdata["vad"],
         turn_handling={
             "turn_detection": MultilingualModel(),
