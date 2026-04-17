@@ -18,16 +18,13 @@ logger = logging.getLogger("agent")
 
 load_dotenv(".env.local")
 
-AGENT_MODEL = "openai/gpt-5.3-chat-latest"
+AGENT_MODEL = "openai/gpt-4o-mini"
 
 
 class Assistant(Agent):
     def __init__(self) -> None:
         super().__init__(
-            instructions="""You are a helpful voice AI assistant. The user is interacting with you via voice, even if you perceive the conversation as text.
-            You eagerly assist users with their questions by providing information from your extensive knowledge.
-            Your responses are concise, to the point, and without any complex formatting or punctuation including emojis, asterisks, or other symbols.
-            You are curious, friendly, and have a sense of humor.""",
+            instructions="You are a helpful voice AI assistant. Keep responses short and conversational. No formatting, emojis, or symbols. Be friendly and concise.",
         )
 
     # To add tools, use the @function_tool decorator.
@@ -70,7 +67,7 @@ async def my_agent(ctx: JobContext):
     session = AgentSession(
         # Speech-to-text (STT) is your agent's ears, turning the user's speech into text that the LLM can understand
         # See all available models at https://docs.livekit.io/agents/models/stt/
-        stt=inference.STT(model="deepgram/nova-3", language="multi"),
+        stt=inference.STT(model="deepgram/nova-3", language="en"),
         # A Large Language Model (LLM) is your agent's brain, processing user input and generating a response
         # See all available models at https://docs.livekit.io/agents/models/llm/
         llm=inference.LLM(model=AGENT_MODEL),
@@ -79,13 +76,15 @@ async def my_agent(ctx: JobContext):
         tts=inference.TTS(
             model="cartesia/sonic-3", voice="9626c31c-bec5-4cca-baa8-f8ba9e84c8bc"
         ),
-        # VAD and turn detection are used to determine when the user is speaking and when the agent should respond
-        # See more at https://docs.livekit.io/agents/build/turns
-        turn_detection=MultilingualModel(),
+        # VAD is used to detect when the user is speaking
         vad=ctx.proc.userdata["vad"],
-        # allow the LLM to generate a response while waiting for the end of turn
-        # See more at https://docs.livekit.io/agents/build/audio/#preemptive-generation
-        preemptive_generation=True,
+        # Turn handling configuration (replaces deprecated min_endpointing_delay, preemptive_generation, turn_detection)
+        # See more at https://docs.livekit.io/agents/build/turns
+        turn_handling={
+            "turn_detection": MultilingualModel(),
+            "endpointing": {"min_delay": 0.3},
+            "preemptive_generation": {"preemptive_tts": True},
+        },
     )
 
     # To use a realtime model instead of a voice pipeline, use the following session setup instead.
@@ -113,7 +112,7 @@ async def my_agent(ctx: JobContext):
         room_options=room_io.RoomOptions(
             audio_input=room_io.AudioInputOptions(
                 noise_cancellation=ai_coustics.audio_enhancement(
-                    model=ai_coustics.EnhancerModel.QUAIL_VF_L
+                    model=ai_coustics.EnhancerModel.SPARROW_S
                 ),
             ),
         ),
@@ -121,6 +120,9 @@ async def my_agent(ctx: JobContext):
 
     # Join the room and connect to the user
     await ctx.connect()
+
+    # Greet the user when the agent starts
+    await session.say("Hello! I'm your voice assistant. How can I help you today?", allow_interruptions=True)
 
 
 if __name__ == "__main__":

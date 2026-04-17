@@ -1,0 +1,28 @@
+# Pre-commit hooks for code quality
+# Install with: pre-commit install
+# Run manually: pre-commit run --all-files
+# Bypass (not recommended): git commit --no-verify
+
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-format
+        name: ruff format
+        entry: uv run ruff format
+        language: system
+        types: [python]
+        stages: [commit]
+
+      - id: ruff-check
+        name: ruff check
+        entry: uv run ruff check
+        language: system
+        types: [python]
+        stages: [commit]
+
+      - id: mypy
+        name: mypy
+        entry: uv run mypy src/
+        language: system
+        types: [python]
+        stages: [commit]
